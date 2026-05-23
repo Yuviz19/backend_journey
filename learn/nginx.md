@@ -82,3 +82,86 @@ this is basically a translation dictionary
 - now it is easier for the browser to understand.
 
 - without the MIME Types the browser has to guess some random bytes.
+
+## Reading the file
+- the line
+```javascript
+fs.readFile(filePath, (err, content) => {
+
+});
+```
+
+- this opens the file from the disk.
+- since the readFile has the syntax as readFile(path, callback)
+- the second arg -> callback
+  - after reading the file, run the function
+  why async?
+    Start reading file
+            ↓
+    Continue doing other things
+            ↓
+    When finished → run callback
+
+- if success
+- the err becomes null
+```javascript
+res.writeHead(200, { 'Content-Type': contentType });
+res.end(content, 'utf-8');
+```
+
+- the file exists
+- and the file must contain some data
+
+- and if there is a failure, then Node can not read the file and content becomes undefined,
+- error happened and err becomes {code: 'ENOENT'}
+hence the if becomes true.
+
+### Error handling
+- ENOENT is an OS level error code "Error NO ENTry" {file does not exists}
+
+#### HTTP Status code
+| code | meaning |
+| -------------- | --------------- |
+| 200 | success   |
+| 404 | not found |
+| 500 | server exploded   |
+
+
+- so the line 
+```javascript
+res.writeHead(404, {
+  "Content-Type": "text/html"
+  res.end('404: File not Found BROOooo...')
+});
+```
+
+-> http content
+  - [HEADER]
+  - [CONTENT]
+
+- this sends some metadata before actual content
+- then the actual data is sent
+
+- the writeHead sends this 
+  1. status code
+  2. headers
+
+- res.end() sends the actual response and closes the connection
+
+### Successfull response
+```javascript
+res.writeHead(200, {
+  'Content-Type': contentType
+});
+```
+
+- 200 means everythings fine.
+- then res.end(content)
+
+### the content and contentTypes 
+- contentType tells the browser that what kind of data the server is sending
+const contentType = mimeType[extName] || 'application/octet-stream';
+
+- what is application/octet-stream
+- if the file type is not defined then treat is as a raw binary file.
+
